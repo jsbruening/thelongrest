@@ -13,6 +13,9 @@
 /prisma/db.sqlite-journal
 db.sqlite
 
+# prisma generated client & engines (do not commit)
+/generated/prisma
+
 # next.js
 /.next/
 /out/
@@ -44,3 +47,6 @@ yarn-error.log*
 
 # idea files
 .idea
+
+# local uploads (user-generated content)
+/uploads
