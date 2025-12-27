@@ -49,7 +49,7 @@ export function TokenPanel({
     },
   });
 
-  const { data: characters } = api.character.getByCampaign.useQuery({
+  api.character.getByCampaign.useQuery({
     campaignId,
   });
 
@@ -77,7 +77,7 @@ export function TokenPanel({
         {isDM && (
           <div>
             <button
-              className="btn btn-outline btn-sm w-full"
+              className="app-btn app-btn-outline w-full justify-between text-xs"
               onClick={() => setShowCreateForm(!showCreateForm)}
             >
               <Plus className="h-4 w-4" />
@@ -99,9 +99,9 @@ export function TokenPanel({
                       className="input input-bordered input-sm w-full"
                     />
                   </div>
-                  <div className="flex items-center gap-2">
-                    <label className="label-text text-xs text-base-content/60">
-                      Size:
+                  <div className="form-control">
+                    <label htmlFor="tokenSize" className="label">
+                      <span className="label-text text-xs text-base-content/60">Size:</span>
                     </label>
                     <input
                       id="tokenSize"
@@ -117,7 +117,7 @@ export function TokenPanel({
                     <button
                       onClick={handleCreateToken}
                       disabled={!newTokenName.trim() || createTokenMutation.isPending}
-                      className="btn btn-primary btn-sm flex-1"
+                      className="app-btn app-btn-primary flex-1 justify-center text-xs"
                     >
                       {createTokenMutation.isPending ? (
                         <span className="loading loading-spinner loading-xs"></span>
@@ -127,7 +127,7 @@ export function TokenPanel({
                     </button>
                     <button
                       onClick={() => setShowCreateForm(false)}
-                      className="btn btn-outline btn-sm flex-1"
+                      className="app-btn app-btn-outline flex-1 justify-center text-xs"
                     >
                       Cancel
                     </button>
@@ -160,9 +160,6 @@ export function TokenPanel({
                 >
                   <div className="font-semibold text-sm">{token.name}</div>
                   <div className="mt-1 flex flex-col gap-1">
-                    {token.character && (
-                      <p className="text-xs text-base-content/60">{token.character.name}</p>
-                    )}
                     <div className="flex items-center gap-2">
                       <div className="badge badge-secondary badge-sm">
                         Size {token.size}
@@ -175,7 +172,7 @@ export function TokenPanel({
                 </button>
                 {isDM && (
                   <button
-                    className="btn btn-ghost btn-sm btn-circle text-error opacity-0 transition-opacity group-hover:opacity-100"
+                    className="app-btn app-btn-ghost app-btn-icon text-error opacity-0 transition-opacity group-hover:opacity-100"
                     onClick={(e) => {
                       e.stopPropagation();
                       handleDeleteToken(token.id);

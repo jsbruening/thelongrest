@@ -1,6 +1,11 @@
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
-import { SessionStatus } from "@prisma/client";
+// SessionStatus enum from Prisma schema
+enum SessionStatus {
+  PLANNED = "PLANNED",
+  ACTIVE = "ACTIVE",
+  COMPLETED = "COMPLETED",
+}
 
 import {
   createTRPCRouter,
@@ -133,12 +138,16 @@ export const sessionRouter = createTRPCRouter({
           map: true,
           tokens: {
             include: {
-              character: {
+              campaignCharacter: {
                 include: {
-                  user: {
-                    select: {
-                      id: true,
-                      name: true,
+                  character: {
+                    include: {
+                      user: {
+                        select: {
+                          id: true,
+                          name: true,
+                        },
+                      },
                     },
                   },
                 },

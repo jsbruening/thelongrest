@@ -137,7 +137,7 @@ export const protectedProcedure = t.procedure
  * Helper function to check session access (for use in procedures that don't use sessionAccessProcedure)
  * Re-exported from middleware for convenience
  */
-export { checkSessionAccess };
+export { checkSessionAccess } from "./middleware/session-access";
 
 /**
  * Session access middleware

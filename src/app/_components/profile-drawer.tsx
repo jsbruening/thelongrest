@@ -97,31 +97,38 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-base-content">Profile Settings</h2>
           <form method="dialog">
-            <button onClick={onClose} className="btn btn-sm btn-circle btn-ghost">
+            <button onClick={onClose} className="app-btn app-btn-ghost app-btn-icon">
               <X className="h-4 w-4" />
             </button>
           </form>
         </div>
 
-        {isLoading ? (
-          <div className="flex flex-1 items-center justify-center py-12">
-            <span className="loading loading-spinner loading-lg text-primary"></span>
-          </div>
-        ) : queryError ? (
-          <div className="flex flex-1 flex-col gap-3">
-            <div className="alert alert-error">
-              <span>{queryError.message || "Failed to load profile"}</span>
-            </div>
-            <button onClick={onClose} className="btn btn-outline">
-              Close
-            </button>
-          </div>
-        ) : (
+        {(() => {
+          if (isLoading) {
+            return (
+              <div className="flex flex-1 items-center justify-center py-12">
+                <span className="loading loading-spinner loading-lg text-primary"></span>
+              </div>
+            );
+          }
+          if (queryError) {
+            return (
+              <div className="flex flex-1 flex-col gap-3">
+                <div className="alert alert-error">
+                  <span>{queryError.message || "Failed to load profile"}</span>
+                </div>
+                <button onClick={onClose} className="app-btn app-btn-outline">
+                  Close
+                </button>
+              </div>
+            );
+          }
+          return (
           <div className="flex flex-1 flex-col gap-6">
             {error && (
               <div className="alert alert-error">
                 <span>{error}</span>
-                <button onClick={() => setError("")} className="btn btn-sm btn-ghost">
+                <button onClick={() => setError("")} className="app-btn app-btn-ghost app-btn-icon">
                   <X className="h-4 w-4" />
                 </button>
               </div>
@@ -151,7 +158,7 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
                 <button
                   onClick={handleFileSelect}
                   disabled={uploading}
-                  className="btn btn-circle btn-sm absolute bottom-0 right-0"
+                  className="app-btn app-btn-ghost app-btn-icon absolute bottom-0 right-0"
                 >
                   {uploading ? (
                     <span className="loading loading-spinner loading-xs"></span>
@@ -178,8 +185,8 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
                 placeholder="Enter your display name"
                 className="input input-bordered w-full"
               />
-              <label className="label">
-                <span className="label-text-alt text-base-content/60">
+              <label className="label" htmlFor="displayNameHelper">
+                <span className="label-text-alt text-base-content/60" id="displayNameHelper">
                   This is how other players will see your name
                 </span>
               </label>
@@ -198,33 +205,34 @@ export function ProfileDrawer({ open, onClose }: ProfileDrawerProps) {
               <button
                 onClick={onClose}
                 disabled={updateProfileMutation.isPending}
-                className="btn btn-outline flex-1"
+                className="app-btn app-btn-outline flex-1"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSave}
                 disabled={updateProfileMutation.isPending}
-                className="btn btn-primary flex-1 gap-2"
+                className="app-btn app-btn-primary flex-1 gap-2"
               >
                 {updateProfileMutation.isPending ? (
                   <>
                     <span className="loading loading-spinner loading-sm"></span>
-                    Saving...
+                    <span>Saving...</span>
                   </>
                 ) : (
                   <>
                     <Save className="h-4 w-4" />
-                    Save Changes
+                    <span>Save Changes</span>
                   </>
                 )}
               </button>
             </div>
           </div>
-        )}
+          );
+        })()}
       </div>
-      <form method="dialog" className="modal-backdrop" onClick={onClose}>
-        <button>close</button>
+      <form method="dialog" className="modal-backdrop">
+        <button type="button" onClick={onClose} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { onClose(); } }}>close</button>
       </form>
     </dialog>
   );

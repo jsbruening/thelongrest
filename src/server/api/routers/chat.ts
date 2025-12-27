@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { TRPCError } from "@trpc/server";
 
 import {
   createTRPCRouter,
@@ -40,8 +39,9 @@ export const chatRouter = createTRPCRouter({
         nextCursor = nextItem?.id;
       }
 
+      const reversedMessages = [...messages].reverse();
       return {
-        messages: messages.reverse(),
+        messages: reversedMessages,
         nextCursor,
       };
     }),

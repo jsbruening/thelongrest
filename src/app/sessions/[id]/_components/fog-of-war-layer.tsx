@@ -65,12 +65,14 @@ export function FogOfWarLayer({
 
       ctx.beginPath();
       const firstPoint = polygon[0];
+      if (!firstPoint) return;
       const pixelX = firstPoint.x * gridSize * zoom + pan.x;
       const pixelY = firstPoint.y * gridSize * zoom + pan.y;
       ctx.moveTo(pixelX, pixelY);
 
       for (let i = 1; i < polygon.length; i++) {
         const point = polygon[i];
+        if (!point) continue;
         const px = point.x * gridSize * zoom + pan.x;
         const py = point.y * gridSize * zoom + pan.y;
         ctx.lineTo(px, py);

@@ -6,7 +6,14 @@ import type { RouterOutputs } from "~/trpc/react";
 import { FogOfWarLayer } from "./fog-of-war-layer";
 import { DrawingLayer } from "./drawing-layer";
 import { SpellEffectsLayer } from "./spell-effects-layer";
-import { EffectType } from "@prisma/client";
+// EffectType enum from Prisma schema
+enum EffectType {
+  CIRCLE = "CIRCLE",
+  SPHERE = "SPHERE",
+  CONE = "CONE",
+  RECTANGLE = "RECTANGLE",
+  LINE = "LINE",
+}
 
 type Map = RouterOutputs["map"]["getBySession"];
 type Token = RouterOutputs["token"]["getBySession"][number];
@@ -35,8 +42,8 @@ export function MapCanvas({
   userId,
   drawingMode,
   spellEffectMode,
-  onDrawingModeChange,
-  onSpellEffectModeChange,
+  onDrawingModeChange: _onDrawingModeChange,
+  onSpellEffectModeChange: _onSpellEffectModeChange,
 }: MapCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -50,6 +57,10 @@ export function MapCanvas({
   >({});
   const [currentDrawingPath, setCurrentDrawingPath] = useState<Array<{ x: number; y: number }>>([]);
   const [drawingColor] = useState("#000000"); // Color picker will be in toolbar
+
+  if (!map) {
+    return <div className="flex h-full items-center justify-center text-white">No map loaded</div>;
+  }
 
   const utils = api.useUtils();
   const moveTokenMutation = api.token.update.useMutation({
@@ -67,7 +78,7 @@ export function MapCanvas({
         utils.token.getBySession.setData(
           { sessionId: map.sessionId },
           previousTokens.map((token) =>
-            token.id === id ? { ...token, x, y } : token,
+            token.id === id ? { ...token, x: x ?? token.x, y: y ?? token.y } : token,
           ),
         );
       }
@@ -169,11 +180,11 @@ export function MapCanvas({
           mapWidth * zoom,
           mapHeight * zoom,
         );
-        drawTokens();
+        drawTokens(ctx);
       };
       img.onerror = () => {
         console.error("Failed to load map image");
-        drawTokens();
+        drawTokens(ctx);
       };
       // Convert file path to URL (assuming images are served from /uploads)
       const relativePath = map.imagePath.includes("uploads/")
@@ -182,16 +193,16 @@ export function MapCanvas({
       const imageUrl = `/api/uploads/${relativePath}`;
       img.src = imageUrl;
     } else {
-      drawTokens();
+      drawTokens(ctx);
     }
 
-    function drawTokens() {
+    function drawTokens(ctx: CanvasRenderingContext2D) {
       // Draw tokens
       tokens.forEach((token) => {
         // Use local position if token is being dragged, otherwise use server position
         const position =
           draggedTokenId === token.id && localTokenPositions[token.id]
-            ? localTokenPositions[token.id]
+            ? (localTokenPositions[token.id] ?? { x: token.x, y: token.y })
             : { x: token.x, y: token.y };
         const pixelPos = gridToPixel(position.x, position.y);
         const tokenSize = token.size * gridSize * zoom;
@@ -273,7 +284,7 @@ export function MapCanvas({
         }
       }
 
-      if (clickedToken && (isDM || clickedToken.character?.user?.id === userId)) {
+      if (clickedToken && isDM) {
         setDraggedTokenId(clickedToken.id);
         onSelectToken(clickedToken.id);
         setIsDragging(true);
@@ -299,7 +310,6 @@ export function MapCanvas({
       drawingMode,
       spellEffectMode,
       pixelToGrid,
-      createSpellEffectMutation,
       map.sessionId,
     ],
   );
@@ -410,8 +420,6 @@ export function MapCanvas({
   }, [
     drawingMode,
     currentDrawingPath,
-    createDrawingMutation,
-    revealFogMutation,
     map.sessionId,
     drawingColor,
     isDM,
@@ -446,7 +454,6 @@ export function MapCanvas({
 
   const createDrawingMutation = api.drawing.create.useMutation();
   const revealFogMutation = api.fogOfWar.revealArea.useMutation();
-  const createSpellEffectMutation = api.spellEffect.create.useMutation();
 
   return (
     <div ref={containerRef} className="relative h-full w-full overflow-hidden">
@@ -474,7 +481,7 @@ export function MapCanvas({
       />
       {/* Fog of War Layer */}
       <FogOfWarLayer
-        fogOfWar={fogOfWar}
+        fogOfWar={fogOfWar ?? null}
         mapWidth={mapWidth}
         mapHeight={mapHeight}
         gridSize={gridSize}

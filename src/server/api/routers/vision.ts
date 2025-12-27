@@ -31,11 +31,15 @@ export const visionRouter = createTRPCRouter({
               visionRadius: { not: null },
             },
             include: {
-              character: {
+              campaignCharacter: {
                 include: {
-                  user: {
-                    select: {
-                      id: true,
+                  character: {
+                    include: {
+                      user: {
+                        select: {
+                          id: true,
+                        },
+                      },
                     },
                   },
                 },
@@ -50,7 +54,7 @@ export const visionRouter = createTRPCRouter({
       }
 
       // Get walls from map
-      const walls = (session.map.walls as Wall[]) ?? [];
+      const walls = (session.map.walls as unknown as Wall[]) ?? [];
       const gridSize = session.map.gridSize;
 
       // Calculate vision for each token
@@ -62,7 +66,7 @@ export const visionRouter = createTRPCRouter({
         // Only calculate vision for tokens owned by the current user (or DM sees all)
         if (
           !ctx.isDM &&
-          token.character?.user?.id !== ctx.session.user.id
+          token.campaignCharacter?.character?.user?.id !== ctx.session.user.id
         ) {
           continue;
         }
@@ -124,7 +128,7 @@ export const visionRouter = createTRPCRouter({
       }
 
       // Calculate vision for all tokens
-      const walls = (session.map.walls as Wall[]) ?? [];
+      const walls = (session.map.walls as unknown as Wall[]) ?? [];
       const gridSize = session.map.gridSize;
 
       const visionPolygons: Point[][] = [];
@@ -163,10 +167,10 @@ export const visionRouter = createTRPCRouter({
         where: { sessionId: input.sessionId },
         create: {
           sessionId: input.sessionId,
-          revealedAreas: allPolygons,
+          revealedAreas: allPolygons as any,
         },
         update: {
-          revealedAreas: allPolygons,
+          revealedAreas: allPolygons as any,
         },
       });
 

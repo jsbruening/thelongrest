@@ -33,37 +33,50 @@ export function CampaignsPage() {
           </div>
           <button
             onClick={() => router.push("/campaigns/new")}
-            className="btn btn-primary gap-2"
+            className="app-btn app-btn-primary gap-2"
           >
-            <Plus className="h-5 w-5" />
-            New Campaign
+            <Plus className="h-4 w-4" />
+            <span className="text-sm font-semibold">New Campaign</span>
           </button>
         </div>
 
         {/* Content */}
-        {sessionStatus === "loading" ? (
-          <div className="flex min-h-[400px] items-center justify-center">
-            <span className="loading loading-spinner loading-lg text-primary"></span>
-          </div>
-        ) : isError ? (
-          <div className="alert alert-error shadow-lg">
-            <span>
-              {error?.data?.code === "UNAUTHORIZED"
-                ? "Please log in to view campaigns"
-                : `Error loading campaigns: ${error?.message ?? "Unknown error"}`}
-            </span>
-          </div>
-        ) : isLoading ? (
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="card bg-base-200 shadow-md">
-                <div className="card-body flex h-[200px] items-center justify-center">
-                  <span className="loading loading-spinner loading-lg text-primary"></span>
-                </div>
+        {(() => {
+          if (sessionStatus === "loading") {
+            return (
+              <div className="flex min-h-[400px] items-center justify-center">
+                <span className="loading loading-spinner loading-lg text-primary"></span>
               </div>
-            ))}
-          </div>
-        ) : campaigns.length === 0 ? (
+            );
+          }
+          if (isError) {
+            let errorMessage = "Unknown error";
+            if (error?.data?.code === "UNAUTHORIZED") {
+              errorMessage = "Please log in to view campaigns";
+            } else if (error?.message) {
+              errorMessage = `Error loading campaigns: ${error.message}`;
+            }
+            return (
+              <div className="alert alert-error shadow-lg">
+                <span>{errorMessage}</span>
+              </div>
+            );
+          }
+          if (isLoading) {
+            return (
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="card bg-base-200 shadow-md">
+                    <div className="card-body flex h-[200px] items-center justify-center">
+                      <span className="loading loading-spinner loading-lg text-primary"></span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            );
+          }
+          if (campaigns.length === 0) {
+            return (
           <div className="card bg-base-200 shadow-lg max-w-2xl mx-auto">
             <div className="card-body py-16 text-center">
               <BookOpen className="mx-auto mb-4 h-16 w-16 text-base-content/40" />
@@ -73,15 +86,17 @@ export function CampaignsPage() {
               </p>
               <button
                 onClick={() => router.push("/campaigns/new")}
-                className="btn btn-primary gap-2"
+                className="app-btn app-btn-primary gap-2"
               >
                 <Plus className="h-5 w-5" />
                 Create Campaign
               </button>
             </div>
           </div>
-        ) : (
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            );
+          }
+          return (
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {campaigns.map((campaign) => (
               <Link
                 key={campaign.id}
@@ -96,7 +111,9 @@ export function CampaignsPage() {
                         {campaign.name}
                       </h3>
                       {campaign.dmId === session?.user?.id && (
-                        <div className="badge badge-secondary badge-sm shrink-0">DM</div>
+                        <div className="badge badge-secondary badge-sm shrink-0 rounded-full px-3 text-[0.65rem] font-semibold uppercase tracking-wide">
+                          DM
+                        </div>
                       )}
                     </div>
 
@@ -124,7 +141,8 @@ export function CampaignsPage() {
               </Link>
             ))}
           </div>
-        )}
+          );
+        })()}
       </div>
     </div>
   );

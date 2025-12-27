@@ -19,109 +19,134 @@ export default async function CampaignDetailPage({
 
   return (
     <HydrateClient>
-      <div className="min-h-screen bg-gradient-to-b from-[#2e026d] to-[#15162c]">
-        <div className="container mx-auto max-w-7xl px-8 lg:px-12 py-8">
+      <div className="min-h-screen px-4 py-6 lg:py-8">
+        <div className="mx-auto max-w-6xl">
           <Link
             href="/campaigns"
-            className="mb-4 inline-block text-white/60 hover:text-white"
+            className="mb-4 inline-block text-sm text-base-content/60 hover:text-base-content"
           >
             ← Back to Campaigns
           </Link>
 
-          <div className="mb-8">
-            <h1 className="text-4xl font-bold text-white">{campaign.name}</h1>
-            {campaign.description && (
-              <p className="mt-2 text-white/70">{campaign.description}</p>
-            )}
-            <p className="mt-2 text-sm text-white/60">
-              DM: {campaign.dm.displayName ?? campaign.dm.name ?? campaign.dm.email}
-            </p>
+          <div className="card bg-base-100 shadow-xl border border-base-300/60 mb-6">
+            <div className="card-body">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                <div>
+                  <h1 className="text-3xl font-bold tracking-tight text-base-content">
+                    {campaign.name}
+                  </h1>
+                  {campaign.description && (
+                    <p className="mt-1 text-base-content/70">{campaign.description}</p>
+                  )}
+                  <p className="mt-2 text-sm text-base-content/60">
+                    DM:{" "}
+                    <span className="font-medium">
+                      {campaign.dm.displayName ?? campaign.dm.name ?? campaign.dm.email}
+                    </span>
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div className="grid gap-8 lg:grid-cols-2">
+          <div className="grid gap-6 lg:grid-cols-2">
             {/* Sessions */}
-            <div>
-              <div className="mb-4 flex items-center justify-between">
-                <div>
-                  <h2 className="text-2xl font-bold text-white">Game Sessions</h2>
-                  <p className="text-sm text-white/60 mt-1">Manage your campaign sessions</p>
-                </div>
-                {campaign.dmId === session.user.id && (
+            <div className="card bg-base-100 shadow-lg border border-base-300/60">
+              <div className="card-body">
+                <div className="mb-3 flex items-center justify-between gap-3">
+                  <div>
+                    <h2 className="card-title text-lg">Game Sessions</h2>
+                    <p className="text-xs text-base-content/60">
+                      Manage and launch play sessions for this campaign.
+                    </p>
+                  </div>
+                  {campaign.dmId === session.user.id && (
                   <Link
                     href={`/campaigns/${id}/sessions/new`}
-                    className="btn btn-primary btn-sm whitespace-nowrap"
+                      className="app-btn app-btn-primary whitespace-nowrap gap-2"
                   >
-                    New Session
-                  </Link>
+                      New Session
+                    </Link>
+                  )}
+                </div>
+
+                {campaign.sessions.length === 0 ? (
+                  <div className="rounded-box border border-dashed border-base-300/70 p-4 text-center text-sm text-base-content/60">
+                    No sessions yet. Create one to start playing.
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {campaign.sessions.map((sessionItem) => (
+                      <Link
+                        key={sessionItem.id}
+                        href={`/sessions/${sessionItem.id}`}
+                        className="block rounded-box border border-base-300/70 bg-base-100 p-4 text-sm transition hover:border-primary/40 hover:bg-base-200/60"
+                      >
+                        <div className="flex items-center justify-between gap-3">
+                          <div>
+                            <p className="font-semibold text-base-content">
+                              {sessionItem.name}
+                            </p>
+                            <p className="text-xs text-base-content/60 mt-0.5">
+                              Status: {sessionItem.status}
+                            </p>
+                          </div>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
                 )}
               </div>
-
-              {campaign.sessions.length === 0 ? (
-                <div className="rounded-lg bg-white/10 p-4 text-center text-white/60">
-                  No sessions yet
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  {campaign.sessions.map((session) => (
-                    <Link
-                      key={session.id}
-                      href={`/sessions/${session.id}`}
-                      className="block rounded-lg bg-white/10 p-4 transition hover:bg-white/20"
-                    >
-                      <h3 className="font-semibold text-white">
-                        {session.name}
-                      </h3>
-                      <p className="text-sm text-white/60">
-                        Status: {session.status}
-                      </p>
-                    </Link>
-                  ))}
-                </div>
-              )}
             </div>
 
             {/* Characters */}
-            <div>
-              <div className="mb-4 flex items-center justify-between">
-                <div>
-                  <h2 className="text-2xl font-bold text-white">Campaign Characters</h2>
-                  <p className="text-sm text-white/60 mt-1">Characters linked to this campaign</p>
+            <div className="card bg-base-100 shadow-lg border border-base-300/60">
+              <div className="card-body">
+                <div className="mb-3 flex items-center justify-between gap-3">
+                  <div>
+                    <h2 className="card-title text-lg">Campaign Characters</h2>
+                    <p className="text-xs text-base-content/60">
+                      Characters linked to this campaign.
+                    </p>
+                  </div>
+                  <Link
+                    href={`/campaigns/${id}/characters/new`}
+                  className="app-btn app-btn-secondary whitespace-nowrap gap-2"
+                  >
+                    Link Character
+                  </Link>
                 </div>
-                <Link
-                  href={`/campaigns/${id}/characters/new`}
-                  className="btn btn-primary btn-sm whitespace-nowrap"
-                >
-                  Link Character
-                </Link>
-              </div>
 
-              {campaign.campaignCharacters.length === 0 ? (
-                <div className="rounded-lg bg-white/10 p-4 text-center text-white/60">
-                  No characters yet
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  {campaign.campaignCharacters.map((cc) => (
-                    <div
-                      key={cc.id}
-                      className="rounded-lg bg-white/10 p-4"
-                    >
-                      <h3 className="font-semibold text-white">
-                        {cc.character.name}
-                      </h3>
-                      <p className="text-sm text-white/60">
-                        Level {cc.level} {cc.character.race}{" "}
-                        {cc.character.class}
-                      </p>
-                      {cc.character.user && (
-                        <p className="text-xs text-white/50">
-                          Player: {cc.character.user.displayName ?? cc.character.user.name ?? cc.character.user.email}
+                {campaign.campaignCharacters.length === 0 ? (
+                  <div className="rounded-box border border-dashed border-base-300/70 p-4 text-center text-sm text-base-content/60">
+                    No characters linked yet. Link characters to include them in sessions.
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    {campaign.campaignCharacters.map((cc) => (
+                      <div
+                        key={cc.id}
+                        className="rounded-box border border-base-300/70 bg-base-100 p-4 text-sm"
+                      >
+                        <p className="font-semibold text-base-content">
+                          {cc.character.name}
                         </p>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
+                        <p className="text-xs text-base-content/60 mt-0.5">
+                          Level {cc.level} {cc.character.race} {cc.character.class}
+                        </p>
+                        {cc.character.user && (
+                          <p className="text-[11px] text-base-content/50 mt-0.5">
+                            Player:{" "}
+                            {cc.character.user.displayName ??
+                              cc.character.user.name ??
+                              cc.character.user.email}
+                          </p>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>

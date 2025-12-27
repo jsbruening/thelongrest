@@ -17,13 +17,17 @@ export const initiativeRouter = createTRPCRouter({
       const tokens = await ctx.db.token.findMany({
         where: { sessionId: input.sessionId },
         include: {
-          character: {
+          campaignCharacter: {
             include: {
-              user: {
-                select: {
-                  id: true,
-                  name: true,
-                  email: true,
+              character: {
+                include: {
+                  user: {
+                    select: {
+                      id: true,
+                      name: true,
+                      email: true,
+                    },
+                  },
                 },
               },
             },
@@ -41,7 +45,7 @@ export const initiativeRouter = createTRPCRouter({
           tokenId: token.id,
           name: token.name,
           initiative: 0, // Would come from database
-          character: token.character,
+          character: token.campaignCharacter?.character ?? null,
         })),
         currentTurn: 0,
         round: 1,
@@ -56,7 +60,7 @@ export const initiativeRouter = createTRPCRouter({
         initiative: z.number().int(),
       }),
     )
-    .mutation(async ({ ctx, input }) => {
+    .mutation(async ({ ctx, input: _input }) => {
       // Access already verified by sessionAccessProcedure
       // Only DM can set initiative
       if (!ctx.isDM) {

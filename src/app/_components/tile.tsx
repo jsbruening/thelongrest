@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { ChevronDown, GripVertical, Pin, PinOff } from "lucide-react";
 import { cn } from "~/lib/utils";
 
@@ -36,11 +36,11 @@ export function Tile({
   pinnable = false,
   pinned = false,
   onPinToggle,
-  onSizeChange,
+  onSizeChange: _onSizeChange,
   className,
 }: TileProps) {
   const [expanded, setExpanded] = useState(defaultExpanded);
-  const [isDragging, setIsDragging] = useState(false);
+  const [isDragging] = useState(false);
 
   const handleExpand = () => {
     if (collapsible) {
@@ -85,7 +85,7 @@ export function Tile({
             {pinnable && (
               <button
                 onClick={handlePinToggle}
-                className="btn btn-ghost btn-sm btn-circle"
+                className="app-btn app-btn-ghost app-btn-icon"
               >
                 {pinned ? (
                   <Pin className="h-4 w-4 text-primary" />
@@ -97,7 +97,7 @@ export function Tile({
             {collapsible && (
               <button
                 onClick={handleExpand}
-                className="btn btn-ghost btn-sm btn-circle"
+                className="app-btn app-btn-ghost app-btn-icon"
               >
                 <ChevronDown
                   className={cn(

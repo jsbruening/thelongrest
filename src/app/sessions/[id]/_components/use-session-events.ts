@@ -88,7 +88,7 @@ export function useSessionEvents(sessionId: string) {
         }
       };
 
-      eventSource.onerror = (error) => {
+      eventSource.onerror = (_error) => {
         if (!isMountedRef.current) return;
 
         // EventSource will automatically close on error

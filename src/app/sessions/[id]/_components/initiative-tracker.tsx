@@ -103,11 +103,6 @@ export function InitiativeTracker({ sessionId, isDM }: InitiativeTrackerProps) {
               )}
               <div className="flex-1">
                 <p className="text-xs font-medium text-white">{token.name}</p>
-                {token.character && (
-                  <p className="text-xs text-white/50">
-                    {token.character.name}
-                  </p>
-                )}
               </div>
               {isDM ? (
                 <input

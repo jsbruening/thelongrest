@@ -36,81 +36,80 @@ export default function NewCampaignPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#2e026d] to-[#15162c]">
-      <div className="container mx-auto px-4 py-8">
-        <Link
-          href="/campaigns"
-          className="mb-4 inline-block text-white/60 hover:text-white"
-        >
-          ← Back to Campaigns
-        </Link>
+    <div className="min-h-screen flex items-center justify-center px-4">
+      <div className="w-full max-w-xl">
+        <div className="mb-6">
+          <Link href="/campaigns" className="text-sm text-base-content/60 hover:text-base-content">
+            ← Back to Campaigns
+          </Link>
+        </div>
 
-        <div className="mx-auto max-w-2xl">
-          <h1 className="mb-8 text-4xl font-bold text-white">
-            Create New Campaign
-          </h1>
+        <div className="card bg-base-100 shadow-xl border border-base-300/60">
+          <div className="card-body">
+            <h1 className="card-title text-2xl mb-1">Create New Campaign</h1>
+            <p className="text-sm text-base-content/60 mb-4">
+              Set up a new world for your adventures. You can always edit details later.
+            </p>
 
-          <form
-            onSubmit={handleSubmit}
-            className="rounded-lg bg-white/10 p-6"
-          >
-            {error && (
-              <div className="mb-4 rounded bg-red-500/20 p-3 text-sm text-red-200">
-                {error}
+            <form onSubmit={handleSubmit} className="space-y-5">
+              {error && (
+                <div className="alert alert-error">
+                  <span>{error}</span>
+                </div>
+              )}
+
+              <div className="form-control">
+                <label htmlFor="name" className="label">
+                  <span className="label-text">
+                    Campaign Name <span className="text-error">*</span>
+                  </span>
+                </label>
+                <input
+                  id="name"
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                  className="input input-bordered w-full bg-base-100 border-2 border-base-300 focus:border-primary focus:outline-none"
+                  placeholder="The Lost Mines of Phandelver"
+                />
               </div>
-            )}
 
-            <div className="mb-4">
-              <label
-                htmlFor="name"
-                className="block text-sm font-medium text-white"
-              >
-                Campaign Name *
-              </label>
-              <input
-                id="name"
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-                className="mt-1 block w-full rounded-md border border-white/20 bg-white/10 px-3 py-2 text-white placeholder-white/50 focus:border-white/40 focus:outline-none focus:ring-1 focus:ring-white/40"
-                placeholder="The Lost Mines of Phandelver"
-              />
-            </div>
+              <div className="form-control">
+                <label htmlFor="description" className="label">
+                  <span className="label-text">Description (optional)</span>
+                </label>
+                <textarea
+                  id="description"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  rows={4}
+                  className="textarea textarea-bordered w-full bg-base-100 border-base-300 focus:border-primary focus:outline-none"
+                  placeholder="A brief description of your campaign..."
+                />
+              </div>
 
-            <div className="mb-6">
-              <label
-                htmlFor="description"
-                className="block text-sm font-medium text-white"
-              >
-                Description (optional)
-              </label>
-              <textarea
-                id="description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                rows={4}
-                className="mt-1 block w-full rounded-md border border-white/20 bg-white/10 px-3 py-2 text-white placeholder-white/50 focus:border-white/40 focus:outline-none focus:ring-1 focus:ring-white/40"
-                placeholder="A brief description of your campaign..."
-              />
-            </div>
-
-            <div className="flex gap-4">
-              <button
-                type="submit"
-                disabled={createCampaign.isPending}
-                className="rounded-md bg-[hsl(280,100%,70%)] px-6 py-2 font-semibold text-white transition hover:bg-[hsl(280,100%,60%)] disabled:opacity-50"
-              >
-                {createCampaign.isPending ? "Creating..." : "Create Campaign"}
-              </button>
-              <Link
-                href="/campaigns"
-                className="rounded-md bg-white/10 px-6 py-2 font-semibold text-white transition hover:bg-white/20"
-              >
-                Cancel
-              </Link>
-            </div>
-          </form>
+              <div className="card-actions justify-end gap-3 pt-2">
+                <Link href="/campaigns" className="app-btn app-btn-ghost">
+                  Cancel
+                </Link>
+                <button
+                  type="submit"
+                  disabled={createCampaign.isPending}
+                  className="app-btn app-btn-primary"
+                >
+                  {createCampaign.isPending ? (
+                    <>
+                      <span className="loading loading-spinner loading-sm" />
+                      <span>Creating...</span>
+                    </>
+                  ) : (
+                    "Create Campaign"
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
     </div>

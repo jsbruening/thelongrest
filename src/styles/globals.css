@@ -63,6 +63,37 @@
   .shadow-subtle-hover {
     box-shadow: 0 4px 12px rgba(15, 23, 42, 0.12), 0 2px 4px rgba(15, 23, 42, 0.08);
   }
+
+  /* App button system (replaces reliance on default DaisyUI btn styles) */
+  .app-btn {
+    @apply inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-semibold transition-colors
+      focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2
+      disabled:opacity-60 disabled:cursor-not-allowed;
+  }
+
+  .app-btn-primary {
+    @apply bg-primary text-primary-content shadow-sm hover:bg-primary;
+  }
+
+  .app-btn-secondary {
+    @apply bg-secondary text-base-content shadow-sm hover:bg-secondary;
+  }
+
+  .app-btn-outline {
+    @apply border border-base-300 bg-base-100 text-base-content hover:bg-base-200;
+  }
+
+  .app-btn-ghost {
+    @apply bg-transparent text-base-content hover:bg-base-200;
+  }
+
+  .app-btn-error {
+    @apply bg-error text-error-content shadow-sm hover:bg-error;
+  }
+
+  .app-btn-icon {
+    @apply inline-flex items-center justify-center rounded-full p-2;
+  }
 }
 
 /* Smooth scrolling */

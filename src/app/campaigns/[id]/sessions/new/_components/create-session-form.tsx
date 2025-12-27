@@ -33,10 +33,11 @@ export function CreateSessionForm({ campaignId }: CreateSessionFormProps) {
   return (
     <form onSubmit={handleSubmit} className="max-w-2xl space-y-4">
       <div>
-        <label className="mb-2 block text-sm font-medium text-white">
+        <label htmlFor="sessionName" className="mb-2 block text-sm font-medium text-white">
           Session Name
         </label>
         <input
+          id="sessionName"
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
@@ -47,10 +48,11 @@ export function CreateSessionForm({ campaignId }: CreateSessionFormProps) {
       </div>
 
       <div>
-        <label className="mb-2 block text-sm font-medium text-white">
+        <label htmlFor="scheduledAt" className="mb-2 block text-sm font-medium text-white">
           Scheduled Date & Time (Optional)
         </label>
         <input
+          id="scheduledAt"
           type="datetime-local"
           value={scheduledAt}
           onChange={(e) => setScheduledAt(e.target.value)}

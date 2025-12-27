@@ -1,14 +1,12 @@
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
-import { writeFile, mkdir } from "fs/promises";
-import { join } from "path";
-import { existsSync } from "fs";
+import { writeFile, mkdir } from "node:fs/promises";
+import { join } from "node:path";
+import { existsSync } from "node:fs";
 
 import {
   createTRPCRouter,
-  protectedProcedure,
   sessionAccessProcedure,
-  checkSessionAccess,
 } from "~/server/api/trpc";
 
 // Basic VTT parser - will be enhanced later
@@ -40,7 +38,10 @@ async function parseVTTFile(vttContent: string) {
     if (currentSection === "walls" && line.trim()) {
       const coords = line.split(",").map(Number);
       if (coords.length === 4) {
-        walls.push({ x1: coords[0], y1: coords[1], x2: coords[2], y2: coords[3] });
+        const [x1, y1, x2, y2] = coords;
+        if (x1 !== undefined && y1 !== undefined && x2 !== undefined && y2 !== undefined) {
+          walls.push({ x1, y1, x2, y2 });
+        }
       }
     }
     // Similar parsing for doors and lights...
@@ -107,9 +108,9 @@ export const mapRouter = createTRPCRouter({
           width: input.width,
           height: input.height,
           gridSize: input.gridSize,
-          walls: parsedData.walls,
-          doors: parsedData.doors,
-          lighting: parsedData.lighting,
+          walls: parsedData.walls as any,
+          doors: parsedData.doors as any,
+          lighting: parsedData.lighting as any,
         },
         update: {
           name: input.name,
@@ -118,9 +119,9 @@ export const mapRouter = createTRPCRouter({
           width: input.width,
           height: input.height,
           gridSize: input.gridSize,
-          walls: parsedData.walls,
-          doors: parsedData.doors,
-          lighting: parsedData.lighting,
+          walls: parsedData.walls as any,
+          doors: parsedData.doors as any,
+          lighting: parsedData.lighting as any,
         },
       });
 

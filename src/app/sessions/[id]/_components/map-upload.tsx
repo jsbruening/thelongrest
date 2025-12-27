@@ -94,10 +94,11 @@ export function MapUpload({ sessionId }: MapUploadProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label className="mb-2 block text-sm font-medium text-white">
+        <label htmlFor="mapName" className="mb-2 block text-sm font-medium text-white">
           Map Name *
         </label>
         <input
+          id="mapName"
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
@@ -108,10 +109,11 @@ export function MapUpload({ sessionId }: MapUploadProps) {
       </div>
 
       <div>
-        <label className="mb-2 block text-sm font-medium text-white">
+        <label htmlFor="mapImage" className="mb-2 block text-sm font-medium text-white">
           Map Image *
         </label>
         <input
+          id="mapImage"
           type="file"
           accept="image/*"
           onChange={(e) => {
@@ -124,10 +126,11 @@ export function MapUpload({ sessionId }: MapUploadProps) {
       </div>
 
       <div>
-        <label className="mb-2 block text-sm font-medium text-white">
+        <label htmlFor="vttFile" className="mb-2 block text-sm font-medium text-white">
           VTT File (Optional)
         </label>
         <input
+          id="vttFile"
           type="file"
           accept=".vtt,.dd2vtt"
           onChange={(e) => {
@@ -143,10 +146,11 @@ export function MapUpload({ sessionId }: MapUploadProps) {
 
       <div className="grid grid-cols-3 gap-4">
         <div>
-          <label className="mb-2 block text-sm font-medium text-white">
+          <label htmlFor="mapWidth" className="mb-2 block text-sm font-medium text-white">
             Width (px)
           </label>
           <input
+            id="mapWidth"
             type="number"
             value={width}
             onChange={(e) => setWidth(Number(e.target.value))}
@@ -156,10 +160,11 @@ export function MapUpload({ sessionId }: MapUploadProps) {
           />
         </div>
         <div>
-          <label className="mb-2 block text-sm font-medium text-white">
+          <label htmlFor="mapHeight" className="mb-2 block text-sm font-medium text-white">
             Height (px)
           </label>
           <input
+            id="mapHeight"
             type="number"
             value={height}
             onChange={(e) => setHeight(Number(e.target.value))}
@@ -169,10 +174,11 @@ export function MapUpload({ sessionId }: MapUploadProps) {
           />
         </div>
         <div>
-          <label className="mb-2 block text-sm font-medium text-white">
+          <label htmlFor="gridSize" className="mb-2 block text-sm font-medium text-white">
             Grid Size (px)
           </label>
           <input
+            id="gridSize"
             type="number"
             value={gridSize}
             onChange={(e) => setGridSize(Number(e.target.value))}

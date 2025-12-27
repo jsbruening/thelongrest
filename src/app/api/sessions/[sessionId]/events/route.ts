@@ -55,7 +55,7 @@ export async function GET(
               updatedAt: { gt: lastTokenUpdate },
             },
             include: {
-              character: {
+              campaignCharacter: {
                 include: {
                   user: {
                     select: {

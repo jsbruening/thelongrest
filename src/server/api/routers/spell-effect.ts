@@ -1,6 +1,13 @@
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
-import { EffectType } from "@prisma/client";
+// EffectType enum from Prisma schema
+enum EffectType {
+  CIRCLE = "CIRCLE",
+  SPHERE = "SPHERE",
+  CONE = "CONE",
+  RECTANGLE = "RECTANGLE",
+  LINE = "LINE",
+}
 
 import {
   createTRPCRouter,

@@ -25,8 +25,14 @@ export function CreateCharacterForm({
     { enabled: isDM },
   );
 
+  const linkCharactersMutation = api.campaign.linkCharacters.useMutation();
   const createCharacterMutation = api.character.create.useMutation({
-    onSuccess: () => {
+    onSuccess: async (character) => {
+      // Link character to campaign
+      await linkCharactersMutation.mutateAsync({
+        campaignId,
+        characterIds: [character.id],
+      });
       router.push(`/campaigns/${campaignId}`);
     },
   });
@@ -36,12 +42,9 @@ export function CreateCharacterForm({
     if (!name.trim() || !race.trim() || !characterClass.trim()) return;
 
     createCharacterMutation.mutate({
-      campaignId,
       name: name.trim(),
-      level,
       race: race.trim(),
       class: characterClass.trim(),
-      userId: isDM ? userId : undefined,
     });
   };
 
@@ -75,10 +78,11 @@ export function CreateCharacterForm({
   return (
     <form onSubmit={handleSubmit} className="max-w-2xl space-y-4">
       <div>
-        <label className="mb-2 block text-sm font-medium text-white">
+        <label htmlFor="characterName" className="mb-2 block text-sm font-medium text-white">
           Character Name *
         </label>
         <input
+          id="characterName"
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
@@ -90,10 +94,11 @@ export function CreateCharacterForm({
 
       {isDM && campaignUsers && (
         <div>
-          <label className="mb-2 block text-sm font-medium text-white">
+          <label htmlFor="assignToPlayer" className="mb-2 block text-sm font-medium text-white">
             Assign to Player (Optional)
           </label>
           <select
+            id="assignToPlayer"
             value={userId ?? ""}
             onChange={(e) => setUserId(e.target.value || undefined)}
             className="w-full rounded bg-white/10 px-4 py-2 text-white"
@@ -110,10 +115,11 @@ export function CreateCharacterForm({
 
       <div className="grid grid-cols-3 gap-4">
         <div>
-          <label className="mb-2 block text-sm font-medium text-white">
+          <label htmlFor="level" className="mb-2 block text-sm font-medium text-white">
             Level *
           </label>
           <input
+            id="level"
             type="number"
             min="1"
             max="20"
@@ -125,10 +131,11 @@ export function CreateCharacterForm({
         </div>
 
         <div>
-          <label className="mb-2 block text-sm font-medium text-white">
+          <label htmlFor="race" className="mb-2 block text-sm font-medium text-white">
             Race *
           </label>
           <input
+            id="race"
             type="text"
             list="races"
             value={race}
@@ -145,10 +152,11 @@ export function CreateCharacterForm({
         </div>
 
         <div>
-          <label className="mb-2 block text-sm font-medium text-white">
+          <label htmlFor="class" className="mb-2 block text-sm font-medium text-white">
             Class *
           </label>
           <input
+            id="class"
             type="text"
             list="classes"
             value={characterClass}

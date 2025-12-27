@@ -31,7 +31,7 @@ export function LoginForm() {
         router.push("/campaigns");
         router.refresh();
       }
-    } catch (err) {
+    } catch {
       setError("An error occurred. Please try again.");
     } finally {
       setLoading(false);
@@ -42,15 +42,7 @@ export function LoginForm() {
     <div className="container flex min-h-screen items-center justify-center px-4">
       <div className="card w-full max-w-[450px] bg-base-100 shadow-xl">
         <div className="card-body">
-          <div className="flex flex-col items-center justify-center mb-4">
-            <Image
-              src="/images/favicon.png"
-              alt="The Long Rest"
-              width={64}
-              height={64}
-              className="mb-4"
-              priority
-            />
+          <div className="flex flex-col items-center justify-center mb-6">
             <Image
               src="/images/tlr_logo.png"
               alt="The Long Rest"
@@ -80,7 +72,7 @@ export function LoginForm() {
                 required
                 autoComplete="email"
                 autoFocus
-                className="input input-bordered w-full"
+                className="input input-bordered w-full bg-base-100 border-2 border-base-300 focus:border-primary focus:outline-none"
               />
             </div>
 
@@ -95,15 +87,15 @@ export function LoginForm() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 autoComplete="current-password"
-                className="input input-bordered w-full"
+                className="input input-bordered w-full bg-base-100 border-2 border-base-300 focus:border-primary focus:outline-none"
               />
             </div>
 
-            <button type="submit" className="btn btn-primary w-full" disabled={loading}>
+            <button type="submit" className="app-btn app-btn-primary w-full justify-center" disabled={loading}>
               {loading ? (
                 <>
                   <span className="loading loading-spinner loading-sm"></span>
-                  Signing in...
+                  <span>Signing in...</span>
                 </>
               ) : (
                 "Sign In"

@@ -10,12 +10,18 @@ import { MapToolbar } from "./map-toolbar";
 import { InitiativeTracker } from "./initiative-tracker";
 import { MapUpload } from "./map-upload";
 import { useSessionEvents } from "./use-session-events";
-import { EffectType } from "@prisma/client";
+// EffectType enum from Prisma schema
+enum EffectType {
+  CIRCLE = "CIRCLE",
+  SPHERE = "SPHERE",
+  CONE = "CONE",
+  RECTANGLE = "RECTANGLE",
+  LINE = "LINE",
+}
 import type { RouterOutputs } from "~/trpc/react";
 
 type Session = RouterOutputs["session"]["getById"];
 type Map = RouterOutputs["map"]["getBySession"];
-type Token = RouterOutputs["token"]["getBySession"][number];
 
 interface SessionViewProps {
   session: Session;
@@ -62,11 +68,15 @@ export function SessionView({
           <h1 className="text-xl font-bold text-white">{session.name}</h1>
           <span
             className={`rounded px-2 py-1 text-xs ${
-              session.status === "ACTIVE"
-                ? "bg-green-500/20 text-green-400"
-                : session.status === "COMPLETED"
-                  ? "bg-gray-500/20 text-gray-400"
-                  : "bg-yellow-500/20 text-yellow-400"
+              (() => {
+                if (session.status === "ACTIVE") {
+                  return "bg-green-500/20 text-green-400";
+                }
+                if (session.status === "COMPLETED") {
+                  return "bg-gray-500/20 text-gray-400";
+                }
+                return "bg-yellow-500/20 text-yellow-400";
+              })()
             }`}
           >
             {session.status}
@@ -104,7 +114,7 @@ export function SessionView({
                 tokens={tokens}
                 selectedTokenId={selectedTokenId}
                 onSelectToken={setSelectedTokenId}
-                onMoveToken={(tokenId, x, y) => {
+                onMoveToken={(_tokenId, _x, _y) => {
                   // This will be handled by the MapCanvas component
                 }}
                 isDM={isDM}
@@ -142,17 +152,17 @@ export function SessionView({
                 <p className="mb-2 text-lg">No map uploaded yet</p>
                 {isDM && (
                   <>
-                    {!showMapUpload ? (
+                    {showMapUpload ? (
+                      <div className="mt-4 max-w-md rounded-lg bg-black/90 p-4">
+                        <MapUpload sessionId={session.id} />
+                      </div>
+                    ) : (
                       <button
                         onClick={() => setShowMapUpload(true)}
                         className="mt-4 rounded bg-[hsl(280,100%,70%)] px-6 py-2 font-semibold text-white transition hover:bg-[hsl(280,100%,60%)]"
                       >
                         Upload Map
                       </button>
-                    ) : (
-                      <div className="mt-4 max-w-md rounded-lg bg-black/90 p-4">
-                        <MapUpload sessionId={session.id} />
-                      </div>
                     )}
                   </>
                 )}

@@ -35,7 +35,7 @@ export default function RootLayout({
                 {/* Mobile top bar */}
                 <div className="w-full navbar bg-base-100 border-b border-base-300 lg:hidden">
                   <div className="flex-none">
-                    <label htmlFor="drawer-toggle" className="btn btn-square btn-ghost">
+                    <label htmlFor="drawer-toggle" className="app-btn app-btn-ghost app-btn-icon" aria-label="Open drawer">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
@@ -47,7 +47,7 @@ export default function RootLayout({
                     </label>
                   </div>
                   <div className="flex-1">
-                    <Link href="/campaigns" className="btn btn-ghost normal-case text-xl px-2">
+                    <Link href="/campaigns" className="app-btn app-btn-ghost normal-case text-xl px-2">
                       <span className="text-lg font-bold">The Long Rest</span>
                     </Link>
                   </div>

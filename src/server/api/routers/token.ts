@@ -28,6 +28,7 @@ export const tokenRouter = createTRPCRouter({
       // ctx.verifiedSession and ctx.isDM are available
 
       // If characterId is provided, verify it exists and belongs to the campaign
+      let campaignCharacterId: string | null = null;
       if (input.characterId) {
         const character = await ctx.db.character.findUnique({
           where: { id: input.characterId },
@@ -56,6 +57,7 @@ export const tokenRouter = createTRPCRouter({
             message: "Character is not linked to this campaign",
           });
         }
+        campaignCharacterId = campaignCharacter.id;
       }
 
       const token = await ctx.db.token.create({
@@ -68,10 +70,10 @@ export const tokenRouter = createTRPCRouter({
           visionRadius: input.visionRadius,
           hasDarkvision: input.hasDarkvision,
           imageUrl: input.imageUrl,
-          characterId: input.characterId,
+          campaignCharacterId,
         },
         include: {
-          character: {
+          campaignCharacter: {
             include: {
               user: {
                 select: {
@@ -96,13 +98,17 @@ export const tokenRouter = createTRPCRouter({
       const tokens = await ctx.db.token.findMany({
         where: { sessionId: input.sessionId },
         include: {
-          character: {
+          campaignCharacter: {
             include: {
-              user: {
-                select: {
-                  id: true,
-                  name: true,
-                  email: true,
+              character: {
+                include: {
+                  user: {
+                    select: {
+                      id: true,
+                      name: true,
+                      email: true,
+                    },
+                  },
                 },
               },
             },
@@ -154,10 +160,11 @@ export const tokenRouter = createTRPCRouter({
 
       // Check access: DM can update any token, players can only update their own character's token
       const isOwner =
-        token.characterId &&
-        (await ctx.db.character.findUnique({
-          where: { id: token.characterId },
-        }))?.userId === ctx.session.user.id;
+        token.campaignCharacterId &&
+        (await ctx.db.campaignCharacter.findUnique({
+          where: { id: token.campaignCharacterId },
+          include: { character: true },
+        }))?.character.userId === ctx.session.user.id;
 
       if (!isDM && !isOwner) {
         throw new TRPCError({
@@ -178,13 +185,17 @@ export const tokenRouter = createTRPCRouter({
           imageUrl: input.imageUrl,
         },
         include: {
-          character: {
+          campaignCharacter: {
             include: {
-              user: {
-                select: {
-                  id: true,
-                  name: true,
-                  email: true,
+              character: {
+                include: {
+                  user: {
+                    select: {
+                      id: true,
+                      name: true,
+                      email: true,
+                    },
+                  },
                 },
               },
             },

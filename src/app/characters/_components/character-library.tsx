@@ -1,12 +1,146 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { useRouter } from "next/navigation";
-import { PhotoCamera, Plus, Edit, Trash2 } from "lucide-react";
+import { Camera, Plus, Edit, Trash2 } from "lucide-react";
 import { api } from "~/trpc/react";
 
+interface CharacterFormProps {
+  isEdit?: boolean;
+  formData: { name: string; race: string; class: string; avatarUrl: string };
+  setFormData: React.Dispatch<React.SetStateAction<{ name: string; race: string; class: string; avatarUrl: string }>>;
+  uploadingAvatar: boolean;
+  fileInputRef: React.RefObject<HTMLInputElement | null>;
+  handleFileSelect: () => void;
+  handleFileUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  commonRaces: string[];
+  commonClasses: string[];
+  createMutation: { error?: { message?: string } | null };
+  updateMutation: { error?: { message?: string } | null };
+}
+
+function CharacterForm({
+  isEdit = false,
+  formData,
+  setFormData,
+  uploadingAvatar,
+  fileInputRef,
+  handleFileSelect,
+  handleFileUpload,
+  commonRaces,
+  commonClasses,
+  createMutation,
+  updateMutation,
+}: CharacterFormProps) {
+  return (
+    <div className="flex flex-col gap-4">
+      {/* Avatar Upload */}
+      <div className="flex flex-col items-center gap-3">
+        <div className="relative">
+          <div className="avatar">
+            <div className="w-24 rounded-full overflow-hidden bg-base-300">
+              {formData.avatarUrl ? (
+                <img
+                  src={formData.avatarUrl}
+                  alt={formData.name || "Character"}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-primary-content text-3xl font-semibold">
+                  {formData.name[0]?.toUpperCase() ?? "?"}
+                </div>
+              )}
+            </div>
+          </div>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+            className="hidden"
+            onChange={handleFileUpload}
+          />
+          <button
+            type="button"
+            onClick={handleFileSelect}
+            disabled={uploadingAvatar}
+            className="app-btn app-btn-ghost app-btn-icon absolute bottom-0 right-0"
+          >
+            {uploadingAvatar ? (
+              <span className="loading loading-spinner loading-xs"></span>
+            ) : (
+              <Camera className="h-4 w-4" />
+            )}
+          </button>
+        </div>
+        <p className="text-xs text-base-content/60 text-center">
+          Click the camera icon to upload an avatar
+        </p>
+      </div>
+
+      {/* Character Name */}
+      <div className="form-control">
+        <label className="label" htmlFor="name">
+          <span className="label-text">Character Name</span>
+        </label>
+        <input
+          id="name"
+          type="text"
+          value={formData.name}
+          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+          required
+          className="input input-bordered w-full"
+        />
+      </div>
+
+      {/* Race and Class */}
+      <div className="grid grid-cols-2 gap-3">
+        <div className="form-control">
+          <label className="label" htmlFor="race">
+            <span className="label-text">Race</span>
+          </label>
+          <select
+            id="race"
+            value={formData.race}
+            onChange={(e) => setFormData({ ...formData, race: e.target.value })}
+            className="select select-bordered w-full"
+          >
+            <option value="">Select race</option>
+            {commonRaces.map((race) => (
+              <option key={race} value={race}>
+                {race}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="form-control">
+          <label className="label" htmlFor="class">
+            <span className="label-text">Class</span>
+          </label>
+          <select
+            id="class"
+            value={formData.class}
+            onChange={(e) => setFormData({ ...formData, class: e.target.value })}
+            className="select select-bordered w-full"
+          >
+            <option value="">Select class</option>
+            {commonClasses.map((cls) => (
+              <option key={cls} value={cls}>
+                {cls}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      {(isEdit ? updateMutation.error : createMutation.error) && (
+        <div className="alert alert-error">
+          <span>{isEdit ? updateMutation.error?.message : createMutation.error?.message}</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function CharacterLibrary() {
-  const router = useRouter();
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -171,108 +305,85 @@ export function CharacterLibrary() {
     "Wizard",
   ];
 
-  const CharacterForm = ({ isEdit = false }: { isEdit?: boolean }) => (
-    <div className="flex flex-col gap-4">
-      {/* Avatar Upload */}
-      <div className="flex flex-col items-center gap-3">
-        <div className="relative">
-          <div className="avatar">
-            <div className="w-24 rounded-full ring ring-primary ring-offset-2 ring-offset-base-100">
-              {formData.avatarUrl ? (
-                <img src={formData.avatarUrl} alt={formData.name || "Character"} />
-              ) : (
-                <div className="w-full h-full rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-primary-content text-3xl font-semibold">
-                  {formData.name[0]?.toUpperCase() ?? "?"}
+  const renderContent = () => {
+    if (isLoading) {
+      return (
+        <div className="flex justify-center py-16">
+          <span className="loading loading-spinner loading-lg"></span>
+        </div>
+      );
+    }
+    if (!characters || characters.length === 0) {
+      return (
+        <div className="card bg-base-100 shadow-lg">
+          <div className="card-body py-16 text-center">
+            <h3 className="mb-2 text-lg font-semibold text-base-content/60">No characters yet</h3>
+            <p className="mb-6 text-sm text-base-content/60">Create your first character to get started!</p>
+            <button
+              onClick={() => {
+                resetForm();
+                setCreateDialogOpen(true);
+              }}
+              className="app-btn app-btn-primary"
+            >
+              <Plus className="h-4 w-4" />
+              Create Character
+            </button>
+          </div>
+        </div>
+      );
+    }
+    return (
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {characters.map((character) => (
+          <div
+            key={character.id}
+            className="card bg-base-100 shadow-lg transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+          >
+            <div className="card-body pt-6">
+              <div className="flex items-center gap-4">
+                <div className="avatar">
+                  <div className="w-16 rounded-full overflow-hidden bg-base-300">
+                    {character.avatarUrl ? (
+                      <img
+                        src={character.avatarUrl}
+                        alt={character.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-primary-content text-xl font-semibold">
+                        {character.name[0]?.toUpperCase()}
+                      </div>
+                    )}
+                  </div>
                 </div>
-              )}
+                <div className="flex-1">
+                  <h3 className="font-semibold leading-none">{character.name}</h3>
+                  <p className="mt-1 text-sm text-base-content/60">
+                    {character.race} {character.class}
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="card-actions justify-end p-4">
+              <button
+                onClick={() => handleEdit(character.id)}
+                className="app-btn app-btn-ghost app-btn-icon"
+              >
+                <Edit className="h-4 w-4" />
+              </button>
+              <button
+                onClick={() => handleDelete(character.id)}
+                className="app-btn app-btn-ghost app-btn-icon text-error"
+              >
+                <Trash2 className="h-4 w-4" />
+              </button>
             </div>
           </div>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
-            className="hidden"
-            onChange={handleFileUpload}
-          />
-          <button
-            onClick={handleFileSelect}
-            disabled={uploadingAvatar}
-            className="btn btn-circle btn-sm absolute bottom-0 right-0"
-          >
-            {uploadingAvatar ? (
-              <span className="loading loading-spinner loading-xs"></span>
-            ) : (
-              <PhotoCamera className="h-4 w-4" />
-            )}
-          </button>
-        </div>
-        <p className="text-xs text-base-content/60 text-center">
-          Click the camera icon to upload an avatar
-        </p>
+        ))}
       </div>
-
-      {/* Character Name */}
-      <div className="form-control">
-        <label className="label" htmlFor="name">
-          <span className="label-text">Character Name</span>
-        </label>
-        <input
-          id="name"
-          type="text"
-          value={formData.name}
-          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          required
-          className="input input-bordered w-full"
-        />
-      </div>
-
-      {/* Race and Class */}
-      <div className="grid grid-cols-2 gap-3">
-        <div className="form-control">
-          <label className="label" htmlFor="race">
-            <span className="label-text">Race</span>
-          </label>
-          <select
-            id="race"
-            value={formData.race}
-            onChange={(e) => setFormData({ ...formData, race: e.target.value })}
-            className="select select-bordered w-full"
-          >
-            <option value="">Select race</option>
-            {commonRaces.map((race) => (
-              <option key={race} value={race}>
-                {race}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="form-control">
-          <label className="label" htmlFor="class">
-            <span className="label-text">Class</span>
-          </label>
-          <select
-            id="class"
-            value={formData.class}
-            onChange={(e) => setFormData({ ...formData, class: e.target.value })}
-            className="select select-bordered w-full"
-          >
-            <option value="">Select class</option>
-            {commonClasses.map((cls) => (
-              <option key={cls} value={cls}>
-                {cls}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      {(isEdit ? updateMutation.error : createMutation.error) && (
-        <div className="alert alert-error">
-          <span>{isEdit ? updateMutation.error?.message : createMutation.error?.message}</span>
-        </div>
-      )}
-    </div>
-  );
+    );
+  };
 
   return (
     <div className="container mx-auto max-w-7xl py-8 px-4">
@@ -283,7 +394,7 @@ export function CharacterLibrary() {
             resetForm();
             setCreateDialogOpen(true);
           }}
-          className="btn btn-primary"
+          className="app-btn app-btn-primary whitespace-nowrap gap-2"
         >
           <Plus className="h-4 w-4" />
           Create Character
@@ -296,83 +407,28 @@ export function CharacterLibrary() {
         </div>
       )}
 
-      {isLoading ? (
-        <div className="flex justify-center py-16">
-          <span className="loading loading-spinner loading-lg"></span>
-        </div>
-      ) : !characters || characters.length === 0 ? (
-        <div className="card bg-base-100 shadow-lg">
-          <div className="card-body py-16 text-center">
-            <h3 className="mb-2 text-lg font-semibold text-base-content/60">No characters yet</h3>
-            <p className="mb-6 text-sm text-base-content/60">Create your first character to get started!</p>
-            <button
-              onClick={() => {
-                resetForm();
-                setCreateDialogOpen(true);
-              }}
-              className="btn btn-primary"
-            >
-              <Plus className="h-4 w-4" />
-              Create Character
-            </button>
-          </div>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {characters.map((character) => (
-            <div
-              key={character.id}
-              className="card bg-base-100 shadow-lg transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
-            >
-              <div className="card-body pt-6">
-                <div className="flex items-center gap-4">
-                  <div className="avatar">
-                    <div className="w-16 rounded-full ring ring-primary ring-offset-2 ring-offset-base-100">
-                      {character.avatarUrl ? (
-                        <img src={character.avatarUrl} alt={character.name} />
-                      ) : (
-                        <div className="w-full h-full rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-primary-content text-xl font-semibold">
-                          {character.name[0]?.toUpperCase()}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold leading-none">{character.name}</h3>
-                    <p className="mt-1 text-sm text-base-content/60">
-                      {character.race} {character.class}
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div className="card-actions justify-end p-4">
-                <button
-                  onClick={() => handleEdit(character.id)}
-                  className="btn btn-ghost btn-sm btn-circle"
-                >
-                  <Edit className="h-4 w-4" />
-                </button>
-                <button
-                  onClick={() => handleDelete(character.id)}
-                  className="btn btn-ghost btn-sm btn-circle text-error"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+      {renderContent()}
 
       {/* Create Modal */}
       <dialog className={`modal ${createDialogOpen ? "modal-open" : ""}`}>
         <div className="modal-box max-w-md">
           <h3 className="font-bold text-lg mb-2">Create New Character</h3>
           <p className="text-sm text-base-content/60 mb-4">Add a new character to your library</p>
-          <CharacterForm />
+          <CharacterForm
+            formData={formData}
+            setFormData={setFormData}
+            uploadingAvatar={uploadingAvatar}
+            fileInputRef={fileInputRef}
+            handleFileSelect={handleFileSelect}
+            handleFileUpload={handleFileUpload}
+            commonRaces={commonRaces}
+            commonClasses={commonClasses}
+            createMutation={createMutation}
+            updateMutation={updateMutation}
+          />
           <div className="modal-action">
             <form method="dialog">
-              <button onClick={() => setCreateDialogOpen(false)} className="btn btn-outline mr-2">
+              <button onClick={() => setCreateDialogOpen(false)} className="app-btn app-btn-outline mr-2">
                 Cancel
               </button>
               <button
@@ -381,12 +437,12 @@ export function CharacterLibrary() {
                   handleCreate();
                 }}
                 disabled={!formData.name || !formData.race || !formData.class || createMutation.isPending}
-                className="btn btn-primary"
+                className="app-btn app-btn-primary"
               >
                 {createMutation.isPending ? (
                   <>
                     <span className="loading loading-spinner loading-sm"></span>
-                    Creating...
+                    <span>Creating...</span>
                   </>
                 ) : (
                   "Create"
@@ -395,8 +451,18 @@ export function CharacterLibrary() {
             </form>
           </div>
         </div>
-        <form method="dialog" className="modal-backdrop" onClick={() => setCreateDialogOpen(false)}>
-          <button>close</button>
+        <form method="dialog" className="modal-backdrop">
+          <button
+            type="button"
+            onClick={() => setCreateDialogOpen(false)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                setCreateDialogOpen(false);
+              }
+            }}
+          >
+            close
+          </button>
         </form>
       </dialog>
 
@@ -405,10 +471,22 @@ export function CharacterLibrary() {
         <div className="modal-box max-w-md">
           <h3 className="font-bold text-lg mb-2">Edit Character</h3>
           <p className="text-sm text-base-content/60 mb-4">Update your character's details</p>
-          <CharacterForm isEdit />
+          <CharacterForm
+            isEdit
+            formData={formData}
+            setFormData={setFormData}
+            uploadingAvatar={uploadingAvatar}
+            fileInputRef={fileInputRef}
+            handleFileSelect={handleFileSelect}
+            handleFileUpload={handleFileUpload}
+            commonRaces={commonRaces}
+            commonClasses={commonClasses}
+            createMutation={createMutation}
+            updateMutation={updateMutation}
+          />
           <div className="modal-action">
             <form method="dialog">
-              <button onClick={() => setEditDialogOpen(false)} className="btn btn-outline mr-2">
+              <button onClick={() => setEditDialogOpen(false)} className="app-btn app-btn-outline mr-2">
                 Cancel
               </button>
               <button
@@ -417,12 +495,12 @@ export function CharacterLibrary() {
                   handleUpdate();
                 }}
                 disabled={!formData.name || !formData.race || !formData.class || updateMutation.isPending}
-                className="btn btn-primary"
+                className="app-btn app-btn-primary"
               >
                 {updateMutation.isPending ? (
                   <>
                     <span className="loading loading-spinner loading-sm"></span>
-                    Saving...
+                    <span>Saving...</span>
                   </>
                 ) : (
                   "Save Changes"
@@ -431,8 +509,18 @@ export function CharacterLibrary() {
             </form>
           </div>
         </div>
-        <form method="dialog" className="modal-backdrop" onClick={() => setEditDialogOpen(false)}>
-          <button>close</button>
+        <form method="dialog" className="modal-backdrop">
+          <button
+            type="button"
+            onClick={() => setEditDialogOpen(false)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                setEditDialogOpen(false);
+              }
+            }}
+          >
+            close
+          </button>
         </form>
       </dialog>
 
@@ -445,7 +533,7 @@ export function CharacterLibrary() {
           </p>
           <div className="modal-action">
             <form method="dialog">
-              <button onClick={() => setDeleteDialogOpen(false)} className="btn btn-outline mr-2">
+              <button onClick={() => setDeleteDialogOpen(false)} className="app-btn app-btn-outline mr-2">
                 Cancel
               </button>
               <button
@@ -454,12 +542,12 @@ export function CharacterLibrary() {
                   confirmDelete();
                 }}
                 disabled={deleteMutation.isPending}
-                className="btn btn-error"
+                className="app-btn app-btn-error"
               >
                 {deleteMutation.isPending ? (
                   <>
                     <span className="loading loading-spinner loading-sm"></span>
-                    Deleting...
+                    <span>Deleting...</span>
                   </>
                 ) : (
                   "Delete"
@@ -468,8 +556,18 @@ export function CharacterLibrary() {
             </form>
           </div>
         </div>
-        <form method="dialog" className="modal-backdrop" onClick={() => setDeleteDialogOpen(false)}>
-          <button>close</button>
+        <form method="dialog" className="modal-backdrop">
+          <button
+            type="button"
+            onClick={() => setDeleteDialogOpen(false)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                setDeleteDialogOpen(false);
+              }
+            }}
+          >
+            close
+          </button>
         </form>
       </dialog>
     </div>

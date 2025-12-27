@@ -1,7 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { EffectType } from "@prisma/client";
+// EffectType enum from Prisma schema
+enum EffectType {
+  CIRCLE = "CIRCLE",
+  SPHERE = "SPHERE",
+  CONE = "CONE",
+  RECTANGLE = "RECTANGLE",
+  LINE = "LINE",
+}
 import { api } from "~/trpc/react";
 
 interface MapToolbarProps {
@@ -28,7 +35,7 @@ export function MapToolbar({
   const autoRevealMutation = api.vision.autoRevealFog.useMutation({
     onSuccess: () => {
       // Refresh fog of war
-      window.location.reload(); // Simple refresh for now
+      globalThis.window.location.reload(); // Simple refresh for now
     },
   });
 

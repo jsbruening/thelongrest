@@ -42,15 +42,7 @@ export function RegisterForm() {
     <div className="container flex min-h-screen items-center justify-center px-4">
       <div className="card w-full max-w-[450px] bg-base-100 shadow-xl">
         <div className="card-body">
-          <div className="flex flex-col items-center justify-center mb-4">
-            <Image
-              src="/images/favicon.png"
-              alt="The Long Rest"
-              width={64}
-              height={64}
-              className="mb-4"
-              priority
-            />
+          <div className="flex flex-col items-center justify-center mb-6">
             <Image
               src="/images/tlr_logo.png"
               alt="The Long Rest"
@@ -78,7 +70,7 @@ export function RegisterForm() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 autoFocus
-                className="input input-bordered w-full"
+                className="input input-bordered w-full bg-base-100 border-2 border-base-300 focus:border-primary focus:outline-none"
               />
             </div>
 
@@ -93,7 +85,7 @@ export function RegisterForm() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 autoComplete="email"
-                className="input input-bordered w-full"
+                className="input input-bordered w-full bg-base-100 border-2 border-base-300 focus:border-primary focus:outline-none"
               />
             </div>
 
@@ -108,18 +100,18 @@ export function RegisterForm() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 autoComplete="new-password"
-                className="input input-bordered w-full"
+                className="input input-bordered w-full bg-base-100 border-2 border-base-300 focus:border-primary focus:outline-none"
               />
-              <label className="label">
-                <span className="label-text-alt">At least 8 characters</span>
+              <label className="label" htmlFor="passwordHelper">
+                <span className="label-text-alt" id="passwordHelper">At least 8 characters</span>
               </label>
             </div>
 
-            <button type="submit" className="btn btn-primary w-full" disabled={registerMutation.isPending}>
+            <button type="submit" className="app-btn app-btn-primary w-full justify-center" disabled={registerMutation.isPending}>
               {registerMutation.isPending ? (
                 <>
                   <span className="loading loading-spinner loading-sm"></span>
-                  Creating account...
+                  <span>Creating account...</span>
                 </>
               ) : (
                 "Create Account"

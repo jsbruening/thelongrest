@@ -22,10 +22,6 @@ declare module "next-auth" {
     } & DefaultSession["user"];
   }
 
-  // interface User {
-  //   // ...other properties
-  //   // role: UserRole;
-  // }
 }
 
 /**
@@ -50,7 +46,7 @@ export const authConfig = {
           where: { email: credentials.email as string },
         });
 
-        if (!user || !user.passwordHash) {
+        if (!user?.passwordHash) {
           return null;
         }
 

@@ -1,5 +1,4 @@
 import { redirect } from "next/navigation";
-import Link from "next/link";
 import { auth } from "~/server/auth";
 import { api, HydrateClient } from "~/trpc/server";
 import { SessionView } from "./_components/session-view";
@@ -18,24 +17,24 @@ export default async function SessionPage({
 
   // Fetch session data
   const gameSession = await api.session.getById({ id });
-  const map = gameSession.map
-    ? await api.map.getBySession({ sessionId: id })
-    : null;
+  const map = await api.map.getBySession({ sessionId: id }).catch(() => null);
   // Tokens will be fetched client-side via React Query
 
-  // Ensure user is a participant
-  const isDM = gameSession.campaign.dmId === session.user.id;
-  const isParticipant = gameSession.participants.some(
-    (p) => p.userId === session.user.id,
+  // Fetch campaign to check DM status
+  const campaign = await api.campaign.getById({ id: gameSession.campaignId });
+  const isDM = campaign.dmId === session.user.id;
+  // Check if user has characters in the campaign (participant check)
+  const isParticipant = campaign.campaignCharacters.some(
+    (cc) => cc.character.userId === session.user.id,
   );
 
   if (!isDM && !isParticipant) {
     // Try to join the session
     try {
       await api.session.join({ id });
-    } catch (error) {
+    } catch {
       // If join fails, redirect back to campaign
-      redirect(`/campaigns/${gameSession.campaignId}`);
+      redirect(`/campaigns/${campaign.id}`);
     }
   }
 

@@ -28,9 +28,9 @@ export function DiceRoller({ sessionId }: DiceRollerProps) {
     if (!notation.trim()) return;
     rollMutation.mutate({
       notation: notation.trim(),
-      advantage,
+      advantage: advantage === "advantage" ? true : undefined,
+      disadvantage: advantage === "disadvantage" ? true : undefined,
       sessionId,
-      shareInChat,
     });
   };
 
@@ -64,43 +64,47 @@ export function DiceRoller({ sessionId }: DiceRollerProps) {
         />
 
         <div className="flex items-center gap-4">
-          <label className="flex items-center gap-2 text-xs text-white/70">
+          <label htmlFor="advantage-none" className="flex items-center gap-2 text-xs text-white/70">
             <input
+              id="advantage-none"
               type="radio"
               checked={advantage === "none"}
               onChange={() => setAdvantage("none")}
               className="h-3 w-3"
             />
-            Normal
+            <span>Normal</span>
           </label>
-          <label className="flex items-center gap-2 text-xs text-white/70">
+          <label htmlFor="advantage-advantage" className="flex items-center gap-2 text-xs text-white/70">
             <input
+              id="advantage-advantage"
               type="radio"
               checked={advantage === "advantage"}
               onChange={() => setAdvantage("advantage")}
               className="h-3 w-3"
             />
-            Advantage
+            <span>Advantage</span>
           </label>
-          <label className="flex items-center gap-2 text-xs text-white/70">
+          <label htmlFor="advantage-disadvantage" className="flex items-center gap-2 text-xs text-white/70">
             <input
+              id="advantage-disadvantage"
               type="radio"
               checked={advantage === "disadvantage"}
               onChange={() => setAdvantage("disadvantage")}
               className="h-3 w-3"
             />
-            Disadvantage
+            <span>Disadvantage</span>
           </label>
         </div>
 
-        <label className="flex items-center gap-2 text-xs text-white/70">
+        <label htmlFor="shareInChat" className="flex items-center gap-2 text-xs text-white/70">
           <input
+            id="shareInChat"
             type="checkbox"
             checked={shareInChat}
             onChange={(e) => setShareInChat(e.target.checked)}
             className="h-3 w-3"
           />
-          Share in chat
+          <span>Share in chat</span>
         </label>
       </div>
 
@@ -134,9 +138,9 @@ export function DiceRoller({ sessionId }: DiceRollerProps) {
               setNotation(roll.value);
               rollMutation.mutate({
                 notation: roll.value,
-                advantage,
+                advantage: advantage === "advantage" ? true : undefined,
+                disadvantage: advantage === "disadvantage" ? true : undefined,
                 sessionId,
-                shareInChat,
               });
             }}
             className="rounded bg-white/10 px-2 py-1 text-xs text-white hover:bg-white/20"

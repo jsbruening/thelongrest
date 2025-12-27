@@ -95,22 +95,22 @@ export default function TestDaisyPage() {
             <h2 className="card-title text-2xl mb-4">Dropdown Menu</h2>
             <div className="flex gap-4">
               <div className="dropdown">
-                <div tabIndex={0} role="button" className="btn btn-primary m-1">
+                <button type="button" tabIndex={0} className="btn btn-primary m-1">
                   Click me
-                </div>
-                <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow-lg border border-base-300">
-                  <li><a>Item 1</a></li>
-                  <li><a>Item 2</a></li>
-                  <li><a>Item 3</a></li>
+                </button>
+                <ul className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow-lg border border-base-300">
+                  <li><button type="button">Item 1</button></li>
+                  <li><button type="button">Item 2</button></li>
+                  <li><button type="button">Item 3</button></li>
                 </ul>
               </div>
               <div className="dropdown dropdown-end">
-                <div tabIndex={0} role="button" className="btn btn-secondary m-1">
+                <button type="button" tabIndex={0} className="btn btn-secondary m-1">
                   Dropdown End
-                </div>
-                <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow-lg border border-base-300">
-                  <li><a>Item 1</a></li>
-                  <li><a>Item 2</a></li>
+                </button>
+                <ul className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow-lg border border-base-300">
+                  <li><button type="button">Item 1</button></li>
+                  <li><button type="button">Item 2</button></li>
                 </ul>
               </div>
             </div>
@@ -160,17 +160,17 @@ export default function TestDaisyPage() {
             <h2 className="card-title text-2xl mb-4">Form Inputs</h2>
             <div className="space-y-4">
               <div className="form-control">
-                <label className="label">
+                <label htmlFor="testTextInput" className="label">
                   <span className="label-text">Text Input</span>
                 </label>
-                <input type="text" placeholder="Type here" className="input input-bordered w-full" />
+                <input id="testTextInput" type="text" placeholder="Type here" className="input input-bordered w-full" />
               </div>
               <div className="form-control">
-                <label className="label">
+                <label htmlFor="testSelect" className="label">
                   <span className="label-text">Select</span>
                 </label>
-                <select className="select select-bordered w-full">
-                  <option disabled selected>Pick one</option>
+                <select id="testSelect" className="select select-bordered w-full">
+                  <option disabled defaultValue="">Pick one</option>
                   <option>Option 1</option>
                   <option>Option 2</option>
                   <option>Option 3</option>
@@ -228,10 +228,10 @@ export default function TestDaisyPage() {
           <div className="card-body">
             <h2 className="card-title text-2xl mb-4">Menu</h2>
             <ul className="menu bg-base-100 rounded-box w-56 p-2 border border-base-300">
-              <li><a>Home</a></li>
-              <li><a>About</a></li>
-              <li><a>Contact</a></li>
-              <li className="disabled"><a>Disabled</a></li>
+              <li><button type="button">Home</button></li>
+              <li><button type="button">About</button></li>
+              <li><button type="button">Contact</button></li>
+              <li className="disabled"><button type="button" disabled>Disabled</button></li>
             </ul>
           </div>
         </div>

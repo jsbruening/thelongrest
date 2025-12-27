@@ -31,7 +31,7 @@ export function Navbar() {
     <>
       {/* Sidebar */}
       <div className="drawer-side">
-        <label htmlFor="drawer-toggle" className="drawer-overlay"></label>
+        <label htmlFor="drawer-toggle" className="drawer-overlay" aria-label="Close drawer"></label>
         <aside className="w-64 min-h-full bg-base-100 border-r border-base-300 flex flex-col">
           {/* Logo */}
           <div className="px-4 pt-4 pb-2 border-b border-base-300">
@@ -81,7 +81,7 @@ export function Navbar() {
           {session?.user && (
             <div className="p-4 border-t border-base-300">
               <div className="dropdown dropdown-top dropdown-end w-full">
-                <div tabIndex={0} role="button" className="btn btn-ghost w-full justify-start gap-3">
+                <button type="button" tabIndex={0} className="app-btn app-btn-ghost w-full justify-start gap-3">
                   <div className="avatar">
                     <div className="w-10 rounded-full ring ring-primary/20 ring-offset-2 ring-offset-base-100 overflow-hidden">
                       {session.user.image ? (
@@ -105,22 +105,29 @@ export function Navbar() {
                     </div>
                     <div className="text-xs text-base-content/60 truncate">{session.user.email}</div>
                   </div>
-                </div>
+                </button>
                 <ul
-                  tabIndex={0}
                   className="dropdown-content menu bg-base-100 rounded-box z-[1] mb-2 w-56 p-2 shadow-lg border border-base-300"
                 >
                   <li>
-                    <a onClick={() => setProfileDrawerOpen(true)}>
+                    <button
+                      type="button"
+                      onClick={() => setProfileDrawerOpen(true)}
+                      className="w-full text-left"
+                    >
                       <Settings className="h-4 w-4" />
                       Profile Settings
-                    </a>
+                    </button>
                   </li>
                   <li>
-                    <a onClick={handleLogout} className="text-error">
+                    <button
+                      type="button"
+                      onClick={handleLogout}
+                      className="w-full text-left text-error"
+                    >
                       <LogOut className="h-4 w-4" />
                       Sign Out
-                    </a>
+                    </button>
                   </li>
                 </ul>
               </div>

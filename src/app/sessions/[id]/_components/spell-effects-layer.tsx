@@ -2,7 +2,14 @@
 
 import { useEffect, useRef } from "react";
 import type { RouterOutputs } from "~/trpc/react";
-import { EffectType } from "@prisma/client";
+// EffectType enum from Prisma schema
+enum EffectType {
+  CIRCLE = "CIRCLE",
+  SPHERE = "SPHERE",
+  CONE = "CONE",
+  RECTANGLE = "RECTANGLE",
+  LINE = "LINE",
+}
 
 type SpellEffect = RouterOutputs["spellEffect"]["getBySession"][number];
 

@@ -17,22 +17,14 @@ export const postRouter = createTRPCRouter({
 
   create: protectedProcedure
     .input(z.object({ name: z.string().min(1) }))
-    .mutation(async ({ ctx, input }) => {
-      return ctx.db.post.create({
-        data: {
-          name: input.name,
-          createdBy: { connect: { id: ctx.session.user.id } },
-        },
-      });
+    .mutation(async ({ ctx, input: _input }) => {
+      // Post model not implemented - placeholder
+      throw new Error("Post model not implemented");
     }),
 
-  getLatest: protectedProcedure.query(async ({ ctx }) => {
-    const post = await ctx.db.post.findFirst({
-      orderBy: { createdAt: "desc" },
-      where: { createdBy: { id: ctx.session.user.id } },
-    });
-
-    return post ?? null;
+  getLatest: protectedProcedure.query(async ({ ctx: _ctx }) => {
+    // Post model not implemented - placeholder
+    return null as { name: string } | null;
   }),
 
   getSecretMessage: protectedProcedure.query(() => {
